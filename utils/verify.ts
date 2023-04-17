@@ -2,7 +2,7 @@ import { BN } from 'bn.js';
 import Node from '../types/node.interface';
 import * as EC from 'elliptic';
 const ec = new EC.ec("secp256k1");
-
+import { shares } from './generateShare';
 
 
 function lagrangeInterpolation(shares: BN[], nodeIndex: BN[]): BN | null {
@@ -30,20 +30,21 @@ function lagrangeInterpolation(shares: BN[], nodeIndex: BN[]): BN | null {
 }
 
 
-export function avss(dataNodes: Array<Node>): boolean {
+export function pvss(dataNodes: Array<Node>): boolean {
     for (let i = 0; i < dataNodes.length; i++) {
+        const pedensent = shares();
         let currentNode = dataNodes[i];
         let listShares = [];
         let listNodeIndex = [];
         for (let j = 0; j < dataNodes.length; j++) {
             if (dataNodes[j] !== currentNode) {
-                listShares.push(dataNodes[j].listShare[i].value);
+                listShares.push(dataNodes[j].listShare[i].value.add(pedensent[j]));
                 listNodeIndex.push(new BN(dataNodes[j].listShare[i].index))
             }
         }
         let caculateSecret = lagrangeInterpolation(listShares, listNodeIndex);
         let proof = signMessageWithSecretNode('test', caculateSecret.toString(16));
-        let newProof = signMessageWithSecretNode('test', currentNode.secret.toString(16));
+        let newProof = signMessageWithSecretNode('test', currentNode.secret.add(pedensent[5]).toString(16));
         if (!compareSignature(proof, newProof)) {
             return false;
         }

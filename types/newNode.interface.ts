@@ -1,7 +1,7 @@
 import Point from './point.interface'
-
+import BN from 'bn.js'
 export default interface NewNode {
     nodeIndex: number,
-    secret: bigint,
+    secret: BN,
     listSecretShare: Array<Point>,
 }
