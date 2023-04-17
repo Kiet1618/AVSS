@@ -42,8 +42,8 @@ export function pvss(dataNodes: Array<Node>): boolean {
                 listNodeIndex.push(new BN(dataNodes[j].listShare[i].index))
             }
         }
-        let caculateSecret = lagrangeInterpolation(listShares, listNodeIndex);
-        let proof = signMessageWithSecretNode('test', caculateSecret.toString(16));
+        let caculateCommitment = lagrangeInterpolation(listShares, listNodeIndex);
+        let proof = signMessageWithSecretNode('test', caculateCommitment.toString(16));
         let newProof = signMessageWithSecretNode('test', currentNode.secret.add(pedensent[5]).toString(16));
         if (!compareSignature(proof, newProof)) {
             return false;
